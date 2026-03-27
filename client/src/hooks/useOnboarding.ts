@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { onboardingApi } from '../api/onboarding';
+import { onboardingApi } from '../api/apiClient';
 
 export const useOnboardingSession = (sessionId: string | null) => {
   return useQuery({

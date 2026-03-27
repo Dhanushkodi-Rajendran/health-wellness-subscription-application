@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export type OnboardingSessionData = {
   sessionId: string | null;
@@ -44,28 +45,35 @@ const initialState: OnboardingSessionData = {
   healthScreening: { conditions: [] },
 };
 
-export const useOnboardingStore = create<OnboardingStore>((set) => ({
-  data: initialState,
-  validationErrors: {},
-  setSessionId: (id) => set((state) => ({ data: { ...state.data, sessionId: id } })),
-  setFullData: (newData) => set((state) => ({ 
-    data: { 
-      ...state.data, 
-      ...newData,
-      basicInfo: { ...state.data.basicInfo, ...(newData.basicInfo || {}) },
-      healthScreening: { ...state.data.healthScreening, ...(newData.healthScreening || {}) }
-    } 
-  })),
-  updateBasicInfo: (info) => 
-    set((state) => ({ data: { ...state.data, basicInfo: { ...state.data.basicInfo, ...info } } })),
-  updateHealthScreening: (info) =>
-    set((state) => ({ data: { ...state.data, healthScreening: { ...state.data.healthScreening, ...info } } })),
-  setPlan: (plan) => set((state) => ({ data: { ...state.data, planSelection: plan } })),
-  setValidationErrors: (errors) => set({ validationErrors: errors }),
-  clearValidationErrors: () => set({ validationErrors: {} }),
-  nextStep: () => set((state) => ({ data: { ...state.data, currentStep: Math.min(4, state.data.currentStep + 1) } })),
-  prevStep: () => set((state) => ({ data: { ...state.data, currentStep: Math.max(1, state.data.currentStep - 1) } })),
-  setStep: (step) => set((state) => ({ data: { ...state.data, currentStep: step } })),
-  terminateFlow: (reason) => set((state) => ({ data: { ...state.data, status: 'ineligible', ineligibilityReason: reason } })),
-  resetSession: () => set({ data: { ...initialState }, validationErrors: {} }),
-}));
+export const useOnboardingStore = create<OnboardingStore>()(
+  persist(
+    (set) => ({
+      data: initialState,
+      validationErrors: {},
+      setSessionId: (id) => set((state) => ({ data: { ...state.data, sessionId: id } })),
+      setFullData: (newData) => set((state) => ({ 
+        data: { 
+          ...state.data, 
+          ...newData,
+          basicInfo: { ...state.data.basicInfo, ...(newData.basicInfo || {}) },
+          healthScreening: { ...state.data.healthScreening, ...(newData.healthScreening || {}) }
+        } 
+      })),
+      updateBasicInfo: (info) => 
+        set((state) => ({ data: { ...state.data, basicInfo: { ...state.data.basicInfo, ...info } } })),
+      updateHealthScreening: (info) =>
+        set((state) => ({ data: { ...state.data, healthScreening: { ...state.data.healthScreening, ...info } } })),
+      setPlan: (plan) => set((state) => ({ data: { ...state.data, planSelection: plan } })),
+      setValidationErrors: (errors) => set({ validationErrors: errors }),
+      clearValidationErrors: () => set({ validationErrors: {} }),
+      nextStep: () => set((state) => ({ data: { ...state.data, currentStep: Math.min(4, state.data.currentStep + 1) } })),
+      prevStep: () => set((state) => ({ data: { ...state.data, currentStep: Math.max(1, state.data.currentStep - 1) } })),
+      setStep: (step) => set((state) => ({ data: { ...state.data, currentStep: step } })),
+      terminateFlow: (reason) => set((state) => ({ data: { ...state.data, status: 'ineligible', ineligibilityReason: reason } })),
+      resetSession: () => set({ data: { ...initialState }, validationErrors: {} }),
+    }),
+    {
+      name: 'onboarding-storage',
+    }
+  )
+);

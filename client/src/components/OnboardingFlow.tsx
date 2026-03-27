@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useOnboardingStore } from "../store/useOnboardingStore";
 import { useOnboardingSession } from "../hooks/useOnboarding";
-import { onboardingApi } from "../api/onboarding";
+import { onboardingApi } from "../api/apiClient";
 import Step1BasicInfo from "./steps/Step1BasicInfo";
 import Step2HealthScreening from "./steps/Step2HealthScreening";
 import Step3PlanSelection from "./steps/Step3PlanSelection";
@@ -42,12 +42,17 @@ export default function OnboardingFlow() {
     }
   }, [sessionId, setSessionId]);
 
+  const currentStepRef = useRef(currentStep);
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
   useEffect(() => {
     if (serverSession && serverSession.status === "in_progress") {
       // Only sync currentStep from server if server is ahead (e.g., page reload).
       // Otherwise, keep local step to avoid overwriting nextStep() calls.
       const { currentStep: serverStep, ...rest } = serverSession;
-      if (serverStep > currentStep) {
+      if (serverStep > currentStepRef.current) {
         setFullData(serverSession);
       } else {
         setFullData(rest);
@@ -60,7 +65,7 @@ export default function OnboardingFlow() {
       initRef.current = false;
       resetSession();
     }
-  }, [serverSession, setFullData, navigate, currentStep, resetSession]);
+  }, [serverSession, setFullData, navigate, resetSession]);
 
   useEffect(() => {
     if (status === "ineligible") {
