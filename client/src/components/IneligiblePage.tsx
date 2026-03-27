@@ -1,4 +1,15 @@
+import { Link, useNavigate } from "react-router-dom";
+import { useOnboardingStore } from "../store/useOnboardingStore";
+
 export default function IneligiblePage() {
+  const navigate = useNavigate();
+  const resetSession = useOnboardingStore((s) => s.resetSession);
+
+  const handleStartNew = () => {
+    localStorage.removeItem("sessionId");
+    resetSession();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center text-center max-w-md mx-auto py-12 px-6 animate-in zoom-in-95 duration-500">
       <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-8 shadow-sm border border-red-100">
@@ -25,10 +36,16 @@ export default function IneligiblePage() {
         wish to discuss this further, please consult with your primary care
         team. Your safety is our absolute priority.
       </p>
-      {/* <button onClick={() => window.location.href = "/"} 
-        className="px-8 py-4 bg-slate-800 hover:bg-slate-900 active:scale-95 text-white rounded-xl font-bold tracking-wide transition-all shadow-lg hover:shadow-xl w-full">
-        Return to Homepage
-      </button> */}
+
+      <div className="flex flex-col gap-3 w-full max-w-xs mt-2">
+        <Link
+          to="/onboarding"
+          onClick={handleStartNew}
+          className="px-6 py-3 text-sm bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white rounded-xl font-bold tracking-wide transition-all shadow-md hover:shadow-lg w-full max-w-xs mx-auto"
+        >
+          Start New Screening
+        </Link>
+      </div>
     </div>
   );
 }
