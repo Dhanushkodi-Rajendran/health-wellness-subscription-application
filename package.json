@@ -1,0 +1,12 @@
+{
+  "name": "sparktech-task",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"cd client && pnpm dev\" \"cd server && pnpm start:dev\"",
+    "build": "cd client && pnpm build && cd server && pnpm build",
+    "start": "concurrently \"cd client && pnpm preview\" \"cd server && pnpm start:prod\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
